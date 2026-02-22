@@ -53,22 +53,21 @@ acts.zero_encoder(actuator_id)
 while clocking_loop():
     print('\033[A\033[A\033[A')
     print(f'| Actuator | Position [rad] | Velocity [rad/s] | Torque [Nm] |')
-
+    
     # Get data from actuator
-    act_data = acts.get_data(ACT_ID)
+    act_data = acts.get_data(actuator_id)
 
     # Update position error
-    position_current = acts.get_position(can_id=ACT_ID, degrees=False)
+    position_current = acts.get_position(can_id=actuator_id, degrees=False)
     prev_error = error_current
     error_current = position_desired - position_current
     errordot_right = (error_current - prev_error) / (1 / OPERATING_FREQ)
 
     # Update torques
     torque_desired = GAIN_KP*error_current + GAIN_KD*errordot_right
-    acts.set_torque(can_id=ACT_ID, torque=torque_desired)
+    acts.set_torque(can_id=actuator_id, torque=torque_desired)
 
-    print(f'| {int(ACT_ID):^5} | {act_data.current_position:^14.2f} | {act_data.current_velocity:^16.2f} | {act_data.current_torque:^11.2f} |')
-
+    print(f'| {int(actuator_id):^5} | {act_data.current_position:^14.2f} | {act_data.current_velocity:^16.2f} | {act_data.current_torque:^11.2f} |')
 
 
 

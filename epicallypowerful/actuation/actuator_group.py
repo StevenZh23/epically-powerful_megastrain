@@ -1,5 +1,5 @@
 from epicallypowerful.actuation.actuator_abc import Actuator
-from epicallypowerful.actuation.cubemars import CubeMars
+from epicallypowerful.actuation.cubemars import CubeMars, CubeMarsV3
 from epicallypowerful.actuation.cubemars import CubeMarsServo
 from epicallypowerful.actuation.robstride import Robstride
 from epicallypowerful.actuation.motor_data import MotorData, cubemars, robstrides
@@ -662,7 +662,7 @@ if __name__ == '__main__':
     from epicallypowerful.actuation.cubemars.cubemars_v3 import CubeMarsV3
     from epicallypowerful.actuation.actuator_group import ActuatorGroup
     import numpy as np
-    ACT_ID = 1
+    ACT_ID = 11
     #acts = ActuatorGroup([Cybergear(2)])
     acts = ActuatorGroup([CubeMarsV3(ACT_ID, 'AK80-9-V3')])
 

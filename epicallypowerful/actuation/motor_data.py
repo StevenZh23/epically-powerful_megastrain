@@ -53,6 +53,8 @@ MOTOR_PARAMS = {
         'rated_torque_limits': (-9.0, 9.0),
         'kp_limits': (0.0, 500.0),
         'kd_limits': (0.0, 5.0),
+        'pole_pairs': 21,
+        'gear_ratio': 9,
         'super_type': 'CubeMars'
     },
     'AK70-9-V3': {
@@ -62,6 +64,8 @@ MOTOR_PARAMS = {
         'rated_torque_limits': (-8.5, 8.5),
         'kp_limits': (0.0, 500.0),
         'kd_limits': (0.0, 5.0),
+        'pole_pairs': 21,
+        'gear_ratio': 9,
         'super_type': 'CubeMars'
     },
     'AK60-6-V3': {
@@ -71,6 +75,8 @@ MOTOR_PARAMS = {
         'rated_torque_limits': (-3.0, 3.0),
         'kp_limits': (0.0, 500.0),
         'kd_limits': (0.0, 5.0),
+        'pole_pairs': 14,
+        'gear_ratio': 6,
         'super_type': 'CubeMars'
     },
     'AK10-9-V3': {
@@ -80,6 +86,8 @@ MOTOR_PARAMS = {
         'rated_torque_limits': (-18.0, 18.0),
         'kp_limits': (0.0, 500.0),
         'kd_limits': (0.0, 5.0),
+        'pole_pairs': 21,
+        'gear_ratio': 9,
         'super_type': 'CubeMars'
     },
     'AK10-9-V2.0': { # 24V/48V operation

@@ -84,7 +84,7 @@ class CubeMarsV3(can.Listener, Actuator):
 
     Additionally, values read using the "get_torque" method actually return current values in Amperes.
 
-    The CubeMars V3 actuators can be intialized to be inverted by default, which will reverse the default Clockwise/Counter-Clockwise direction of the motor.
+    The CubeMars V3 actuators can be initialized to be inverted by default, which will reverse the default Clockwise/Counter-Clockwise direction of the motor.
 
     Availabe `motor_type` strings are:
         * 'AK80-9-V3'
