@@ -18,6 +18,15 @@ def TimedLoop(rate, tolerance=0.1, verbose=True):
     sleep time based on the actual time taken for each loop iteration to ensure average frequency is maintained. This means over time, the number of iterations will
     tightly match the expected number of iterations.
 
+    Example:
+        .. code-block:: python
+            from epicpower.toolbox.clocking import TimedLoop
+            looper = TimedLoop(rate=200)
+
+            while looper.continue_loop():
+                # do something every 5ms
+                pass
+
     Args:
         rate (int): The desired loop frequency in Hz.
         tolerance (float, optional): The acceptable time step error tolerance as a proportion of the time step. Defaults to 0.1.

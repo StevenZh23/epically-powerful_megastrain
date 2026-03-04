@@ -11,6 +11,8 @@
 
 ## Clocking
 ```{eval-rst}
+.. autofunction:: epicallypowerful.toolbox.TimedLoop
+
 .. autoclass:: epicallypowerful.toolbox.LoopTimer
     :members:
     :undoc-members:
