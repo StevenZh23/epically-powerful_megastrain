@@ -50,19 +50,6 @@ GYRO_RANGE_1000_DEG_PER_S = 2 # Set MEGASTRAIN5000 gyroscope resolution to +/- 1
 GYRO_RANGE_2000_DEG_PER_S = 3 # Set MEGASTRAIN5000 gyroscope resolution to +/- 2000.0 deg/s
 SLEEP_TIME   = 0.1 # [s]
 
-# Set PCA9548A (variant of TCA9548A) multiplexer register, channels and actions
-MULTIPLEXER_ADDR = 0x70
-MULTIPLEXER_ACTIONS = {
-    0: 0x01,
-    1: 0x02,
-    2: 0x04,
-    3: 0x08,
-    4: 0x10,
-    5: 0x20,
-    6: 0x40,
-    7: 0x80,
-}
-
 
 class MEGASTRAIN5000IMUs(IMU):
     """Class for interfacing with the MEGASTRAIN5000 IMU using I2C communication, leveraging the TCA9548A multiplexer for communicating with multiple units at the same time.
@@ -143,7 +130,6 @@ class MEGASTRAIN5000IMUs(IMU):
         self.verbose = verbose
         self.bus = {}
         self.calibration_dict = {}
-        self.prev_channel = -1
 
         # Look for existing calibrations for IMUs
         if len(calibration_path) > 0:
@@ -185,23 +171,11 @@ class MEGASTRAIN5000IMUs(IMU):
         for imu_id in imu_ids.keys():
             # Get all relevant components to communicate with IMU
             bus_id = imu_ids[imu_id]['bus'] 
-            channel = imu_ids[imu_id]['channel']
             address = imu_ids[imu_id]['address']
 
             # Initialize I2C bus if it hasn't been initialized yet
             if bus_id not in self.bus.keys():
                 self.bus[bus_id] = smbus.SMBus(bus_id)
-
-            # If channel is in range for multiplexion (not default -1 value) 
-            # and no channel-switching command has already been sent on current bus, 
-            # send multiplexer channel switch command
-            if channel in range(0, 8):
-                if channel is not self.prev_channel:
-                    self.bus[bus_id].write_byte_data(
-                        i2c_addr=MULTIPLEXER_ADDR,
-                        value=MULTIPLEXER_ACTIONS[channel],
-                    )
-                    self.prev_channel = channel
 
             startup_config_vals[imu_id] = {}
 
@@ -341,18 +315,9 @@ class MEGASTRAIN5000IMUs(IMU):
         """
         imu_data = IMUData()
         bus = self.bus[self.imu_ids[imu_id]['bus']]
-        channel = self.imu_ids[imu_id]['channel']
         address = self.imu_ids[imu_id]['address']
-        cal_id = f"{self.imu_ids[imu_id]['bus']}_{channel}_{address}"
-        
-        # If using multiplexer, switch to proper channel
-        if channel in range(0,8):
-            if channel is not self.prev_channel:
-                bus.write_byte_data(
-                    i2c_addr=MULTIPLEXER_ADDR,
-                    value=MULTIPLEXER_ACTIONS[channel],
-                )
-                self.prev_channel = channel
+        cal_id = f"{self.imu_ids[imu_id]['bus']}_{address}"
+
 
         # Get accelerometer and gyroscope data
         if any([c for c in self.components if (('acc' in c) or ('gyro' in c))]):
@@ -501,7 +466,7 @@ if __name__ == "__main__":
     if "tegra" in machine_name:
         bus_ids = [1,7]
     elif "rpi" in machine_name or "bcm" in machine_name or "raspi" in machine_name:
-        bus_ids = [1,4]
+        bus_ids = [15,16]
     else:
         bus_ids = [1]
 
@@ -509,38 +474,17 @@ if __name__ == "__main__":
         0:
             {
                 'bus': bus_ids[0],
-                'channel': 0,
                 'address': 0x68,
             },
         1:
             {
-                'bus': bus_ids[0],
-                'channel': 0,
+                'bus': bus_ids[1],
                 'address': 0x69,
             },
         2:
             {
-                'bus': bus_ids[1],
-                'channel': 1,
+                'bus': bus_ids[2],
                 'address': 0x68,
-            },
-        3:
-            {
-                'bus': bus_ids[1],
-                'channel': 1,
-                'address': 0x69,
-            },
-        4:
-            {
-                'bus': bus_ids[1],
-                'channel': 2,
-                'address': 0x68,
-            },
-        5:
-            {
-                'bus': bus_ids[1],
-                'channel': 2,
-                'address': 0x69,
             },
     }
 

@@ -163,13 +163,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--channel",
-    type=int,
-    default=-1,
-    help="(If using multiplexer) channel sensor is on (e.g., --channel 1). Defaults to -1 (no multiplexer)",
-)
-
-parser.add_argument(
     "--address",
     type=int,
     default=68,
@@ -188,11 +181,10 @@ if __name__ == "__main__":
     # Pull in command-line arguments for which IMU to calibrate and how to do so
     args = parser.parse_args()
     bus = args.i2c_bus
-    channel = args.channel
     address = int('0x'+str(args.address), 0) # Convert multi-digit address into hex, then int
     components = args.components
     print(f"components: {components}")
-    print(f"Initializing MEGASTRAIN5000 IMU at I2C bus {bus} on channel {channel} with address {address}")
+    print(f"Initializing MEGASTRAIN5000 IMU at I2C bus {bus} with address {address}")
 
     # Set up dictionary for IMU currently being calibrated
     # TODO: decide whether to add functionality for calibrating multiple IMUs in sequence
@@ -200,7 +192,6 @@ if __name__ == "__main__":
         0:
             {
                 'bus': bus,
-                'channel': channel,
                 'address': address,
                 'acc': [],
                 'gyro': [],
@@ -214,10 +205,10 @@ if __name__ == "__main__":
         with open(calibration_filename, "r") as f:
             calibration_dict = json.load(f)
     else:
-        calibration_dict = {f"{bus}_{channel}_{address}": {}}
+        calibration_dict = {f"{bus}_{address}": {}}
 
         for component in imu_id[0].keys():
-            calibration_dict[f"{bus}_{channel}_{address}"][component] = imu_id[0][component]
+            calibration_dict[f"{bus}_{address}"][component] = imu_id[0][component]
     
     # TROUBLESHOOTING
     # print(f"calibration_dict: \n{calibration_dict}")
@@ -239,16 +230,16 @@ if __name__ == "__main__":
         for idx in calibration_dict.keys():
             # Check all IMUs in dict to see whether they are connected in 
             # the configuration to be the IMU currently being calibrated
-            if calibration_dict[idx]['bus'] == bus and calibration_dict[idx]['channel'] == channel and calibration_dict[idx]['address'] == address:
+            if calibration_dict[idx]['bus'] == bus  and calibration_dict[idx]['address'] == address:
 
                 if len(calibration_dict[idx][component]) > 0:
                     imu_calibration_exists = True
-                    user_input = input(f"Overwrite existing {component} calibration for IMU (bus: {bus}, channel: {channel}, address: {address})? Enter [y/n], then press [ENTER] to continue: ")
+                    user_input = input(f"Overwrite existing {component} calibration for IMU (bus: {bus}, address: {address})? Enter [y/n], then press [ENTER] to continue: ")
 
                     if user_input == 'y':
                         calibrate_component = True
                     else:
-                        print(f"Skipping {component} calibration for IMU (bus: {bus}, channel: {channel}, address: {address})...")
+                        print(f"Skipping {component} calibration for IMU (bus: {bus}, address: {address})...")
                 else:
                     calibrate_component = True
         
@@ -284,8 +275,8 @@ if __name__ == "__main__":
 
         # Iterate through calibration dict, updating calibration components where necessary
         for idx in calibration_dict.keys():
-            # Index IMUs in calibration dict by bus, channel, and address configuration
-            if calibration_dict[idx]['bus'] == bus and calibration_dict[idx]['channel'] == channel and calibration_dict[idx]['address'] == address:
+            # Index IMUs in calibration dict by bus and address configuration
+            if calibration_dict[idx]['bus'] == busand calibration_dict[idx]['address'] == address:
                 calibration_dict[idx][component] = imu_id[0][component]
 
     # Save calibration dictionary to same JSON file
