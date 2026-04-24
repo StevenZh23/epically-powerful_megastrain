@@ -47,12 +47,12 @@ class IMUData:
     eul_y: float = 0.0
     eul_z: float = 0.0
 
-    # Gyro [MICROSTRAIN & MPU9250]
+    # Gyro [MICROSTRAIN & MPU9250 & MEGASTRAIN5000]
     gyro_x: float = 0.0
     gyro_y: float = 0.0
     gyro_z: float = 0.0
 
-    # Linear acceleration [MICROSTRAIN & MPU9250]
+    # Linear acceleration [MICROSTRAIN & MPU9250 & MEGASTRAIN5000]
     acc_x: float = 0.0
     acc_y: float = 0.0
     acc_z: float = 0.0

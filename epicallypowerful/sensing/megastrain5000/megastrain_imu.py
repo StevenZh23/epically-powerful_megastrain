@@ -199,7 +199,6 @@ class MEGASTRAIN5000IMUs(IMU):
                 if channel is not self.prev_channel:
                     self.bus[bus_id].write_byte_data(
                         i2c_addr=MULTIPLEXER_ADDR,
-                        register=0x04,
                         value=MULTIPLEXER_ACTIONS[channel],
                     )
                     self.prev_channel = channel
@@ -351,7 +350,6 @@ class MEGASTRAIN5000IMUs(IMU):
             if channel is not self.prev_channel:
                 bus.write_byte_data(
                     i2c_addr=MULTIPLEXER_ADDR,
-                    register=0x04,
                     value=MULTIPLEXER_ACTIONS[channel],
                 )
                 self.prev_channel = channel
@@ -511,37 +509,37 @@ if __name__ == "__main__":
         0:
             {
                 'bus': bus_ids[0],
-                'channel': -1,
+                'channel': 0,
                 'address': 0x68,
             },
         1:
             {
                 'bus': bus_ids[0],
-                'channel': -1,
+                'channel': 0,
                 'address': 0x69,
             },
         2:
             {
                 'bus': bus_ids[1],
-                'channel': 2,
+                'channel': 1,
                 'address': 0x68,
             },
         3:
             {
                 'bus': bus_ids[1],
-                'channel': 2,
+                'channel': 1,
                 'address': 0x69,
             },
         4:
             {
                 'bus': bus_ids[1],
-                'channel': 4,
+                'channel': 2,
                 'address': 0x68,
             },
         5:
             {
                 'bus': bus_ids[1],
-                'channel': 4,
+                'channel': 2,
                 'address': 0x69,
             },
     }
