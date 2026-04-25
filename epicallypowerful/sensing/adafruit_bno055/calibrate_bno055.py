@@ -1,7 +1,7 @@
 """epically-powerful module for managing IMUs.
 
 This module contains functions for calibrating the 
-accelerometer, gyroscope, and magnetometer of the Megastrain5000 IMUs. 
+accelerometer, gyroscope, and magnetometer of the Adafruit BNO055 IMUs. 
 Methodology for these steps is adapted from the MPU9250 calibration steps
 
 """
@@ -18,13 +18,14 @@ from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 import smbus2 as smbus # I2C bus library on Raspberry Pi and NVIDIA Jetson Orin Nano
 from epicallypowerful.toolbox import LoopTimer
-from epicallypowerful.sensing.megastrain5000.megastrain_imu import MEGASTRAIN5000IMUs
+from epicallypowerful.sensing.adafruit_bno055.bno055_imu import BNO055IMUs
 
 
 # Get default I2C bus depending on which device is currently being used
 machine_name = platform.uname().release.lower()
 
-#TODO: Consider changing this since the multiplexer does mess up the I2C buses. Have the user specify the bus for the multiplexer, then have the code automatically determine which bus the sensor is on based on that. 
+#TODO: Also consider changing this one due to the multiplexer adding several buses
+if "tegra" in machine_name:
     DEFAULT_I2C_BUS = 7
 elif "rpi" in machine_name or "bcm" in machine_name or "raspi" in machine_name:
     DEFAULT_I2C_BUS = 1
@@ -61,7 +62,7 @@ def remove_outliers(
 
 
 def calibrate_accelerometer(
-    imu_handler: MEGASTRAIN5000IMUs,
+    imu_handler: BNO055IMUs,
     loop_timer: LoopTimer,
     time_to_calibrate: float=2.5,
     verbose: bool=False,
@@ -111,7 +112,7 @@ def calibrate_accelerometer(
 
 
 def calibrate_gyroscope(
-    imu_handler: MEGASTRAIN5000IMUs,
+    imu_handler: BNO055IMUs,
     loop_timer: LoopTimer,
     time_to_calibrate: float=2.5,
     verbose: bool=False,
@@ -145,7 +146,7 @@ def split_strings(arg):
 
 # Create argument parser
 parser = argparse.ArgumentParser(
-    description="Calibrate MEGASTRAIN5000 IMU."
+    description="Calibrate BNO055 IMU."
 )
 
 parser.add_argument(
@@ -165,15 +166,15 @@ parser.add_argument(
 parser.add_argument(
     "--address",
     type=int,
-    default=68,
-    help="I2C address of MEGASTRAIN5000 sensor (e.g., --address 68). Defaults to 68",
+    default=29,
+    help="I2C address of BNO055 sensor (e.g., --address 29). Defaults to 29. If the COM3 input pin is low, then the address is 28. If the COM3 input pin is high, then the address is 29.",
 )
 
 parser.add_argument(
     "--rate",
     type=float,
-    default=400,
-    help="Frequency of MEGASTRAIN5000 sensor [Hz] (e.g., --rate 400). Defaults to 400 Hz",
+    default=100,
+    help="Frequency of BNO055 sensor [Hz] (e.g., --rate 100). Defaults to 100 Hz, which is the fastest rate at which the BNO055 can be read from without losing data.",
 )
 
 
@@ -184,7 +185,7 @@ if __name__ == "__main__":
     address = int('0x'+str(args.address), 0) # Convert multi-digit address into hex, then int
     components = args.components
     print(f"components: {components}")
-    print(f"Initializing MEGASTRAIN5000 IMU at I2C bus {bus} with address {address}")
+    print(f"Initializing BNO055 IMU at I2C bus {bus} with address {address}")
 
     # Set up dictionary for IMU currently being calibrated
     # TODO: decide whether to add functionality for calibrating multiple IMUs in sequence
@@ -199,7 +200,7 @@ if __name__ == "__main__":
     }
 
     # Look for existing calibration for current IMU in JSON file
-    calibration_filename = f"megastrain5000_calibrations.json"
+    calibration_filename = f"bno055_calibrations.json"
     
     if os.path.isfile(calibration_filename):
         with open(calibration_filename, "r") as f:
@@ -213,11 +214,11 @@ if __name__ == "__main__":
     # TROUBLESHOOTING
     # print(f"calibration_dict: \n{calibration_dict}")
 
-    # Create instance of MEGASTRAIN5000 IMUs object to initialize connected IMU
-    megastrain5000_imus = MEGASTRAIN5000IMUs(
+    # Create instance of BNO055 IMUs object to initialize connected IMU
+    bno055_imus = BNO055IMUs(
         imu_ids=imu_id,
         components=args.components,
-        calibration_path='', # When generating a new calibration, don't rely on old one
+        calibrationepicallypowerful/sensing/megastrain5000_path='', # When generating a new calibration, don't rely on old one
         verbose=True,
     )
 
@@ -254,7 +255,7 @@ if __name__ == "__main__":
             print("Getting acceleration calibration!")
 
             imu_id[0]['acc'] = calibrate_accelerometer(
-                imu_handler=megastrain5000_imus,
+                imu_handler=bno055_imus,
                 loop_timer=LoopTimer(operating_rate=args.rate, verbose=False),
                 time_to_calibrate=2.5,
                 verbose=True,
@@ -265,7 +266,7 @@ if __name__ == "__main__":
             print("Getting gyroscope calibration!")
             
             imu_id[0]['gyro'] = calibrate_gyroscope(
-                imu_handler=megastrain5000_imus,
+                imu_handler=bno055_imus,
                 loop_timer=LoopTimer(operating_rate=args.rate, verbose=True),
                 time_to_calibrate=2.5,
                 verbose=True,
