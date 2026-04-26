@@ -218,7 +218,7 @@ if __name__ == "__main__":
     bno055_imus = BNO055IMUs(
         imu_ids=imu_id,
         components=args.components,
-        calibrationepicallypowerful/sensing/megastrain5000_path='', # When generating a new calibration, don't rely on old one
+        calibration='', # When generating a new calibration, don't rely on old one
         verbose=True,
     )
 
